@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omni-View Manhole Scanner Concept</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .grid-bg {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+        }
+        .lidar-scan {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: radar 2s infinite linear;
+        }
+        @keyframes radar {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 100%; height: 100%; opacity: 0; }
+        }
+        .wireframe-model {
+            background: 
+                linear-gradient(180deg, transparent 49%, rgba(59, 130, 246, 0.3) 50%, transparent 51%),
+                linear-gradient(90deg, transparent 49%, rgba(59, 130, 246, 0.3) 50%, transparent 51%);
+            background-size: 20px 20px;
+            perspective: 500px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-gray-950 p-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="scan-eye" class="text-white w-5 h-5"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">OMNI-VIEW <span class="text-blue-500">PRO</span></h1>
+            </div>
+            <nav class="flex gap-4">
+                <button onclick="switchTab('hardware')" id="btn-hardware" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium transition">Hardware Concept</button>
+                <button onclick="switchTab('app')" id="btn-app" class="px-4 py-2 rounded-lg hover:bg-gray-800 text-gray-400 text-sm font-medium transition">Field Tablet App</button>
+                <button onclick="switchTab('cloud')" id="btn-cloud" class="px-4 py-2 rounded-lg hover:bg-gray-800 text-gray-400 text-sm font-medium transition">Cloud Dashboard</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-6 relative overflow-hidden">
+        
+        <!-- HARDWARE VIEW -->
+        <div id="view-hardware" class="max-w-5xl mx-auto h-full flex flex-col md:flex-row gap-8 items-center justify-center fade-in">
+            <!-- Hardware Diagram -->
+            <div class="relative w-full md:w-1/2 h-[500px] bg-gray-800 rounded-2xl p-8 border border-gray-700 flex flex-col items-center justify-center">
+                <div class="absolute top-4 left-4 text-xs text-gray-500 font-mono">SCHEMATIC V1.2</div>
+                
+                <!-- The Pole & Device Representation -->
+                <div class="relative h-full flex flex-col items-center w-64">
+                    <!-- Tablet Mount -->
+                    <div class="absolute top-10 -right-16 w-32 h-20 bg-gray-900 border-2 border-blue-500 rounded-lg flex items-center justify-center transform rotate-12 shadow-lg z-20">
+                        <div class="text-[8px] text-blue-400 font-mono">LIVE FEED</div>
+                    </div>
+                    <div class="absolute top-16 right-0 w-8 h-2 bg-gray-600 rotate-12"></div> <!-- Mount Arm -->
+
+                    <!-- Handle -->
+                    <div class="w-4 h-12 bg-orange-500 rounded-full mb-1 z-10 shadow-lg"></div>
+                    
+                    <!-- Carbon Fiber Pole -->
+                    <div class="w-2 h-64 bg-gradient-to-b from-gray-700 to-gray-900 border-x border-gray-600 z-0"></div>
+                    
+                    <!-- Standoff / Centering -->
+                    <div class="absolute bottom-32 w-48 h-1 bg-gray-500/50 rounded-full flex justify-between items-center">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
+                    </div>
+                    
+                    <!-- Camera Head -->
+                    <div class="w-24 h-32 bg-gray-900 border border-gray-600 rounded-2xl flex flex-col items-center justify-end pb-4 relative shadow-2xl z-10">
+                        <!-- Lenses -->
+                        <div class="absolute top-4 w-full flex justify-around px-2">
+                            <div class="w-6 h-6 bg-black rounded-full border border-gray-700 flex items-center justify-center"><div class="w-2 h-2 bg-blue-900 rounded-full opacity-50"></div></div>
+                            <div class="w-6 h-6 bg-black rounded-full border border-gray-700 flex items-center justify-center"><div class="w-2 h-2 bg-blue-900 rounded-full opacity-50"></div></div>
+                        </div>
+                        <!-- LED Ring -->
+                        <div class="absolute bottom-8 w-16 h-4 bg-white rounded-full blur-md opacity-20"></div>
+                        <div class="w-20 h-8 border-t-2 border-white/30 rounded-full mt-2"></div>
+                        
+                        <!-- Sensors -->
+                        <div class="absolute -bottom-6 flex gap-2">
+                            <span class="text-[10px] bg-green-900 text-green-300 px-1 rounded">LiDAR</span>
+                            <span class="text-[10px] bg-purple-900 text-purple-300 px-1 rounded">IMU</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specs Panel -->
+            <div class="w-full md:w-1/2 space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2">The Rig</h2>
+                    <p class="text-gray-400">Lightweight carbon fiber deployment system with integrated stabilizing standoff and dual-sensor head.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700 hover:border-blue-500/50 transition">
+                        <div class="p-2 bg-blue-500/10 rounded-lg text-blue-400"><i data-lucide="camera" class="w-6 h-6"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-white">Dual-Fisheye Array</h3>
+                            <p class="text-sm text-gray-400">2x 20MP sensors for true 360° capture without blind spots. 6K effective resolution.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700 hover:border-green-500/50 transition">
+                        <div class="p-2 bg-green-500/10 rounded-lg text-green-400"><i data-lucide="scan" class="w-6 h-6"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-white">LiDAR Depth Mapper</h3>
+                            <p class="text-sm text-gray-400">Instant pipe diameter sizing and defect depth measurement (±2mm accuracy).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700 hover:border-orange-500/50 transition">
+                        <div class="p-2 bg-orange-500/10 rounded-lg text-orange-400"><i data-lucide="zap" class="w-6 h-6"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-white">Power & Comms</h3>
+                            <p class="text-sm text-gray-400">Hot-swappable tool battery (4hr runtime). Wi-Fi 6 Direct to tablet (Low latency).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLET APP VIEW -->
+        <div id="view-app" class="hidden h-full flex items-center justify-center">
+            <div class="relative w-[800px] h-[500px] bg-black border-[12px] border-gray-800 rounded-[2rem] shadow-2xl overflow-hidden flex">
+                <!-- Camera Notch -->
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-24 bg-gray-800 rounded-r-lg z-20"></div>
+
+                <!-- Sidebar Controls -->
+                <div class="w-20 bg-gray-900/90 backdrop-blur border-r border-gray-700 flex flex-col items-center py-6 gap-6 z-10">
+                    <div class="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/20"><i data-lucide="aperture" class="w-6 h-6 text-white"></i></div>
+                    <div class="p-2 text-gray-400 hover:text-white"><i data-lucide="ruler" class="w-6 h-6"></i></div>
+                    <div class="p-2 text-gray-400 hover:text-white"><i data-lucide="sun" class="w-6 h-6"></i></div>
+                    <div class="mt-auto p-2 text-red-400 animate-pulse"><i data-lucide="battery" class="w-6 h-6"></i></div>
+                </div>
+
+                <!-- Main Viewport -->
+                <div class="flex-1 relative bg-gray-900 grid-bg overflow-hidden group">
+                    <!-- Fake Live Feed Content -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-80">
+                        <div class="w-[400px] h-[400px] rounded-full border border-gray-600 flex items-center justify-center relative">
+                            <!-- Manhole Walls Simulation -->
+                            <div class="absolute inset-0 rounded-full border-[20px] border-gray-800/50"></div>
+                            <div class="absolute inset-4 rounded-full border border-blue-500/30"></div>
+                            <div class="text-xs text-blue-500/50 absolute top-2">N</div>
+                            
+                            <!-- Defect Indicators -->
+                            <div class="absolute top-1/4 right-1/4 flex flex-col items-center">
+                                <div class="w-4 h-4 border-2 border-red-500 rounded-full animate-ping"></div>
+                                <div class="bg-red-500/90 text-white text-[10px] px-1 rounded mt-1">CRACK</div>
+                            </div>
+
+                            <!-- Depth Meter -->
+                            <div class="absolute bottom-10 bg-black/60 px-3 py-1 rounded-full text-sm font-mono text-green-400 border border-green-500/30">
+                                Depth: -8.4ft
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overlay UI -->
+                    <div class="absolute top-4 left-4">
+                        <div class="text-xs text-gray-400 font-mono">JOB: MH-2940-A</div>
+                        <div class="text-lg font-bold text-white">Recording... 00:42</div>
+                    </div>
+                    
+                    <div class="absolute bottom-6 left-1/2 -translate-x-1/2">
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-red-900/50 flex items-center gap-2 transition transform hover:scale-105">
+                            <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div> STOP SCAN
+                        </button>
+                    </div>
+
+                    <!-- AI Toast -->
+                    <div class="absolute top-4 right-4 w-64 bg-gray-900/90 border border-gray-700 rounded-lg p-3 shadow-xl backdrop-blur-sm transform transition translate-x-0">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="cpu" class="w-4 h-4 text-purple-400"></i>
+                            <span class="text-xs font-bold text-purple-400">AI DETECTION ACTIVE</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-300">Root Intrusion</span>
+                                <span class="text-orange-400">Med</span>
+                            </div>
+                            <div class="w-full bg-gray-700 h-1 rounded-full"><div class="bg-orange-400 w-3/4 h-1 rounded-full"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 text-center text-gray-500 text-sm">Interactive Tablet Simulation</div>
+        </div>
+
+        <!-- CLOUD DASHBOARD VIEW -->
+        <div id="view-cloud" class="hidden h-full max-w-6xl mx-auto flex gap-6 fade-in">
+            <!-- Sidebar Navigation -->
+            <div class="w-64 bg-gray-800 rounded-2xl border border-gray-700 p-4 flex flex-col gap-2">
+                <div class="pb-4 mb-4 border-b border-gray-700">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Workspace</h3>
+                </div>
+                <button class="flex items-center gap-3 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"><i data-lucide="map" class="w-4 h-4"></i> Map View</button>
+                <button class="flex items-center gap-3 px-3 py-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded-lg text-sm transition"><i data-lucide="list" class="w-4 h-4"></i> Asset List</button>
+                <button class="flex items-center gap-3 px-3 py-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded-lg text-sm transition"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Reports</button>
+                
+                <div class="mt-auto">
+                    <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600">
+                        <div class="text-xs text-gray-400 mb-1">Storage Usage</div>
+                        <div class="flex items-end gap-1">
+                            <span class="text-xl font-bold text-white">42</span>
+                            <span class="text-xs text-gray-400 mb-1">GB / 1TB</span>
+                        </div>
+                        <div class="w-full bg-gray-600 h-1.5 rounded-full mt-2"><div class="bg-green-500 w-[10%] h-1.5 rounded-full"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Area -->
+            <div class="flex-1 flex flex-col gap-6">
+                <!-- Top Stats -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                        <div class="text-gray-400 text-xs mb-1">Assets Scanned Today</div>
+                        <div class="text-2xl font-bold text-white">24</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                        <div class="text-gray-400 text-xs mb-1">Critical Defects Found</div>
+                        <div class="text-2xl font-bold text-red-500">3</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                        <div class="text-gray-400 text-xs mb-1">AI Accuracy Rate</div>
+                        <div class="text-2xl font-bold text-blue-400">94.2%</div>
+                    </div>
+                </div>
+
+                <!-- Analysis Window -->
+                <div class="flex-1 bg-gray-800 rounded-2xl border border-gray-700 flex overflow-hidden">
+                    <!-- 3D Model View -->
+                    <div class="flex-1 bg-gray-900 relative border-r border-gray-700">
+                        <div class="absolute top-4 left-4 z-10 bg-black/50 px-2 py-1 rounded text-xs text-white">MH-2940-A • 3D Mesh</div>
+                        
+                        <!-- 3D Representation -->
+                        <div class="w-full h-full wireframe-model relative overflow-hidden group">
+                            <!-- Simulated Cylinder -->
+                            <div class="absolute left-1/2 top-0 bottom-0 w-32 -translate-x-1/2 border-x border-blue-500/20 bg-blue-500/5"></div>
+                            
+                            <!-- Defect Tag -->
+                            <div class="absolute top-1/3 left-1/2 translate-x-4 cursor-pointer hover:scale-110 transition">
+                                <div class="w-3 h-3 bg-red-500 rounded-full shadow-[0_0_15px_red]"></div>
+                                <div class="absolute left-4 top-0 bg-gray-900 border border-gray-600 px-2 py-1 rounded text-[10px] whitespace-nowrap">
+                                    Fracture (Multiple) <br> <span class="text-gray-400">Depth: 4.2ft</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline Scrubber -->
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <input type="range" class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer" min="0" max="100">
+                        </div>
+                    </div>
+
+                    <!-- AI Findings Panel -->
+                    <div class="w-80 p-4 overflow-y-auto">
+                        <h4 class="text-sm font-bold text-white mb-4 border-b border-gray-700 pb-2">AI Findings Log</h4>
+                        
+                        <div class="space-y-3">
+                            <!-- Finding Item -->
+                            <div class="bg-gray-700/30 p-3 rounded-lg border-l-2 border-red-500 hover:bg-gray-700/50 transition cursor-pointer">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-sm font-medium text-white">Structural Crack</span>
+                                    <span class="text-[10px] bg-red-500/20 text-red-400 px-1.5 rounded">High</span>
+                                </div>
+                                <p class="text-xs text-gray-400">Multiple longitudinal fractures detected at 12 o'clock.</p>
+                                <div class="mt-2 flex gap-2">
+                                    <button class="text-[10px] bg-blue-600 px-2 py-0.5 rounded text-white hover:bg-blue-500">Verify</button>
+                                    <button class="text-[10px] bg-gray-600 px-2 py-0.5 rounded text-white hover:bg-gray-500">Reject</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-700/30 p-3 rounded-lg border-l-2 border-orange-500 hover:bg-gray-700/50 transition cursor-pointer">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-sm font-medium text-white">Root Intrusion</span>
+                                    <span class="text-[10px] bg-orange-500/20 text-orange-400 px-1.5 rounded">Med</span>
+                                </div>
+                                <p class="text-xs text-gray-400">Fine roots entering via joint at 8.4ft.</p>
+                            </div>
+
+                            <div class="bg-gray-700/30 p-3 rounded-lg border-l-2 border-green-500 hover:bg-gray-700/50 transition cursor-pointer">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-sm font-medium text-white">Bench Condition</span>
+                                    <span class="text-[10px] bg-green-500/20 text-green-400 px-1.5 rounded">Good</span>
+                                </div>
+                                <p class="text-xs text-gray-400">No significant erosion detected.</p>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-6 py-2 bg-white text-gray-900 text-xs font-bold rounded hover:bg-gray-200 transition">GENERATE PDF REPORT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function switchTab(tabId) {
+            // Hide all views
+            document.getElementById('view-hardware').classList.add('hidden');
+            document.getElementById('view-app').classList.add('hidden');
+            document.getElementById('view-cloud').classList.add('hidden');
+
+            // Reset buttons
+            document.getElementById('btn-hardware').className = "px-4 py-2 rounded-lg hover:bg-gray-800 text-gray-400 text-sm font-medium transition";
+            document.getElementById('btn-app').className = "px-4 py-2 rounded-lg hover:bg-gray-800 text-gray-400 text-sm font-medium transition";
+            document.getElementById('btn-cloud').className = "px-4 py-2 rounded-lg hover:bg-gray-800 text-gray-400 text-sm font-medium transition";
+
+            // Show selected view
+            const selectedView = document.getElementById('view-' + tabId);
+            selectedView.classList.remove('hidden');
+            
+            // Highlight selected button
+            const selectedBtn = document.getElementById('btn-' + tabId);
+            selectedBtn.className = "px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium transition";
+        }
+    </script>
+</body>
+</html>
+
